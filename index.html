@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{min-height:100vh;background:#1a0a2e;font-family:'Lato',sans-serif;overflow-x:hidden;color:#f0e6ff;}
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--dur) ease-in-out infinite alternate;opacity:0;}
+@keyframes twinkle{0%{opacity:0;transform:scale(0.8);}100%{opacity:var(--max-op);transform:scale(1.2);}}
+.petal{position:fixed;top:-30px;font-size:var(--fs);animation:fall var(--dur) linear infinite;opacity:0.7;pointer-events:none;z-index:0;}
+@keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:0;}10%{opacity:0.7;}90%{opacity:0.7;}100%{transform:translateY(110vh) rotate(360deg);opacity:0;}}
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+@keyframes fadein{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+@keyframes shimmer{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-14px) rotate(5deg);}}
+@keyframes heart-float{0%{transform:translateY(0) scale(0.5);opacity:1;}100%{transform:translateY(-120px) scale(1.2);opacity:0;}}
+@keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(200px) rotate(720deg);}}
+@keyframes wobble{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+
+/* LOCK */
+#lockScreen{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.lock-icon{font-size:4.5rem;animation:float 3s ease-in-out infinite;}
+.lock-title{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,4vw,2rem);font-style:italic;color:#ddd6fe;text-align:center;}
+.pin-dots{display:flex;gap:14px;margin-bottom:4px;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(168,85,247,0.5);background:transparent;transition:background 0.2s,border-color 0.2s;}
+.pin-dot.filled{background:#a855f7;border-color:#a855f7;}
+.pin-dot.wrong{background:#e879f9;border-color:#e879f9;animation:shake 0.4s ease;}
+
+/* NUMPAD — simple table-like layout, no grid tricks */
+.numpad{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.numpad-row{display:flex;gap:10px;}
+.num-btn{width:68px;height:68px;border-radius:50%;border:1px solid rgba(168,85,247,0.35);background:rgba(109,40,217,0.12);color:#e9d5ff;font-size:1.25rem;font-family:'Lato',sans-serif;cursor:pointer;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.num-btn:hover{background:rgba(109,40,217,0.28);}
+.num-btn:active{transform:scale(0.9);background:rgba(168,85,247,0.35);}
+.pin-hint{font-size:0.72rem;color:rgba(192,132,252,0.4);letter-spacing:0.1em;text-align:center;margin-top:2px;}
+
+/* MAIN */
+#mainContent{display:none;flex-direction:column;align-items:center;width:100%;}
+.crown{font-size:3rem;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+.subtitle-tag{display:inline-block;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;padding:6px 20px;border-radius:50px;margin-bottom:24px;}
+.name{font-family:'Playfair Display',serif;font-size:clamp(3rem,10vw,6.5rem);font-weight:700;line-height:1;background:linear-gradient(135deg,#c084fc,#e879f9,#a855f7,#ddd6fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;text-align:center;animation:shimmer 4s ease-in-out infinite;background-size:200% 200%;}
+.birthday-line{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(0.95rem,2.5vw,1.3rem);color:#c084fc;letter-spacing:0.08em;margin-bottom:32px;}
+.divider{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.divider-line{width:70px;height:1px;background:linear-gradient(to right,transparent,#7c3aed);}
+.divider-line.right{background:linear-gradient(to left,transparent,#7c3aed);}
+.divider-gem{font-size:1.2rem;cursor:pointer;transition:transform 0.2s;user-select:none;}
+.divider-gem:hover{transform:scale(1.4) rotate(20deg);}
+
+.reveal-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-family:'Lato',sans-serif;font-size:1rem;letter-spacing:0.05em;padding:14px 32px;border-radius:50px;cursor:pointer;margin-bottom:28px;transition:transform 0.15s;box-shadow:0 0 28px rgba(168,85,247,0.25);}
+.reveal-btn:hover{transform:scale(1.04);}
+.reveal-btn:active{transform:scale(0.96);}
+.envelope-icon{font-size:1.2rem;animation:wobble 2s ease-in-out infinite;}
+
+.card{max-width:660px;width:100%;background:rgba(109,40,217,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:24px;padding:44px 48px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;background:radial-gradient(circle,rgba(168,85,247,0.13),transparent 70%);pointer-events:none;}
+.quote-mark{font-family:'Playfair Display',serif;font-size:4.5rem;line-height:0.4;color:#7c3aed;opacity:0.4;display:block;margin-bottom:14px;}
+.message-text{font-size:1rem;line-height:1.9;font-weight:300;color:#e9d5ff;position:relative;z-index:1;}
+.message-text p{margin-bottom:1.1em;}
+.message-text p:last-child{margin-bottom:0;}
+.highlight{font-style:italic;color:#c084fc;}
+.msg-hidden{filter:blur(12px);user-select:none;pointer-events:none;transition:filter 0.9s ease;}
+.msg-visible{filter:blur(0);transition:filter 0.9s ease;}
+
+.signature-wrap{margin-top:32px;text-align:right;}
+.signature-label{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#9333ea;margin-bottom:4px;}
+.signature{font-family:'Playfair Display',serif;font-style:italic;font-size:1.9rem;color:#d8b4fe;}
+
+.balloons{display:flex;gap:10px;margin-top:36px;flex-wrap:wrap;justify-content:center;}
+.balloon{font-size:2rem;animation:bob calc(2s + var(--delay)) ease-in-out infinite;cursor:pointer;user-select:none;transition:transform 0.1s;}
+.balloon:active{transform:scale(0.8);}
+
+.wish-area{margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.wish-btn{background:rgba(109,40,217,0.15);border:1px solid rgba(168,85,247,0.3);color:#e9d5ff;font-family:'Lato',sans-serif;font-size:0.9rem;padding:10px 26px;border-radius:50px;cursor:pointer;transition:background 0.15s,transform 0.1s;}
+.wish-btn:hover{background:rgba(109,40,217,0.28);}
+.wish-btn:active{transform:scale(0.95);}
+.wish-text{font-size:0.82rem;color:#c084fc;min-height:1.2em;text-align:center;font-style:italic;}
+
+.candle-area{margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;}
+.candle-label{font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(192,132,252,0.5);}
+.candles-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:420px;}
+.candle{font-size:1.8rem;cursor:pointer;transition:transform 0.1s,opacity 0.2s;user-select:none;}
+.candle:hover{transform:scale(1.2);}
+.candle:active{transform:scale(0.85);}
+.candle.out{opacity:0.3;filter:grayscale(1);}
+.candle-status{font-size:0.82rem;color:#c084fc;min-height:1.2em;text-align:center;}
+
+.tap-note{margin-top:20px;font-size:0.7rem;letter-spacing:0.12em;color:rgba(192,132,252,0.3);text-transform:uppercase;}
+
+.float-heart{position:fixed;pointer-events:none;z-index:998;animation:heart-float 1.6s ease-out forwards;}
+.confetti-piece{position:fixed;pointer-events:none;border-radius:2px;z-index:999;animation:confetti-fall 1.4s ease-out forwards;}
+
+.fadein{opacity:0;animation:fadein 0.7s ease forwards;}
+@media(max-width:520px){.card{padding:28px 22px;}.name{font-size:3rem;}}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div id="petals"></div>
+
+<div class="page">
+
+  <div id="lockScreen">
+    <div class="lock-icon">🎀</div>
+    <div class="lock-title">A little something for ZZ&hellip;</div>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="numpad" id="numpad">
+      <div class="numpad-row">
+        <button class="num-btn">1</button>
+        <button class="num-btn">2</button>
+        <button class="num-btn">3</button>
+      </div>
+      <div class="numpad-row">
+        <button class="num-btn">4</button>
+        <button class="num-btn">5</button>
+        <button class="num-btn">6</button>
+      </div>
+      <div class="numpad-row">
+        <button class="num-btn">7</button>
+        <button class="num-btn">8</button>
+        <button class="num-btn">9</button>
+      </div>
+      <div class="numpad-row">
+        <button class="num-btn" id="clearBtn" style="font-size:0.85rem;color:#c084fc;">⌫</button>
+        <button class="num-btn">0</button>
+        <button class="num-btn" id="okBtn" style="font-size:0.85rem;color:#c084fc;">OK</button>
+      </div>
+    </div>
+    <div class="pin-hint">hint: the day she turns 21 &nbsp;·&nbsp; ddmm</div>
+  </div>
+
+  <div id="mainContent">
+    <div class="crown">👑</div>
+    <div class="subtitle-tag fadein" style="animation-delay:0.1s">Today is all about you</div>
+    <h1 class="name fadein" style="animation-delay:0.2s">Happy Birthday, ZZ</h1>
+    <p class="birthday-line fadein" style="animation-delay:0.3s">Turning 21 &nbsp;·&nbsp; June 7, 2026</p>
+
+    <div class="divider fadein" style="animation-delay:0.4s">
+      <div class="divider-line"></div>
+      <span class="divider-gem" id="gemBtn">💜</span>
+      <div class="divider-line right"></div>
+    </div>
+
+    <button class="reveal-btn fadein" id="revealBtn" style="animation-delay:0.5s">
+      <span class="envelope-icon">💌</span> Open your message
+    </button>
+
+    <div class="card fadein" style="animation-delay:0.6s">
+      <span class="quote-mark">&ldquo;</span>
+      <div class="message-text msg-hidden" id="msgText">
+        <p>Happy, happy birthday, my love! 🎂 Today, the universe gets to celebrate the day it decided to send someone as extraordinary as you into this world — and into my life. Twenty-one years of you, and every single one of them has made this world a little warmer, a little brighter.</p>
+        <p>Thank you for being everything I never knew I needed. <span class="highlight">Thank you for being the calm in my chaos, the laughter in my quiet days, and the warmth I reach for every single morning.</span> You've always been there — through the loud days and the still ones, through every version of me — and I want you to know that means more than words could ever hold.</p>
+        <p>You are a rare kind of person, ZZ. The kind that makes people feel seen just by being around you. <span class="highlight">You love fiercely, you give generously, and you carry grace in everything you do.</span> The world is genuinely better because you're in it.</p>
+        <p>On your 21st birthday, I hope you feel as loved as you've made me feel. I hope today is filled with all the things that make your heart full — and I hope you know that wherever the journey takes us, <span class="highlight">I am right here, always in your corner, always cheering you on.</span></p>
+        <p>Today is yours. Enjoy every second of it — you deserve it completely. I love you so, so much. More than you know. More than I say. Always. 💜</p>
+      </div>
+    </div>
+
+    <div class="signature-wrap fadein" style="animation-delay:0.7s">
+      <p class="signature-label">With all my love</p>
+      <p class="signature">Rie 💜</p>
+    </div>
+
+    <div class="balloons fadein" style="animation-delay:0.8s" id="balloonRow">
+      <span class="balloon" style="--delay:0s">🎈</span>
+      <span class="balloon" style="--delay:0.3s">🎂</span>
+      <span class="balloon" style="--delay:0.6s">🎁</span>
+      <span class="balloon" style="--delay:0.9s">🥂</span>
+      <span class="balloon" style="--delay:1.2s">🎈</span>
+    </div>
+
+    <div class="wish-area fadein" style="animation-delay:0.9s">
+      <button class="wish-btn" id="wishBtn">Send ZZ a wish 🌠</button>
+      <div class="wish-text" id="wishText"></div>
+    </div>
+
+    <div class="candle-area fadein" style="animation-delay:1s">
+      <div class="candle-label">Blow out your candles 🎂</div>
+      <div class="candles-row" id="candleRow"></div>
+      <div class="candle-status" id="candleStatus">Tap each candle to blow it out!</div>
+    </div>
+
+    <p class="tap-note fadein" style="animation-delay:1.1s">Tap anywhere for confetti 🎊</p>
+  </div>
+
+</div>
+
+<script>
+const PIN = '0706';
+let entered = '';
+let revealed = false;
+let candlesOut = 0;
+const totalCandles = 21;
+const colors = ['#a855f7','#c084fc','#e879f9','#ddd6fe','#f0abfc','#7c3aed','#ffd6ff','#fff'];
+
+// Stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 100; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const sz = Math.random() * 2.5 + 0.5;
+  s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${(Math.random()*3+1.5).toFixed(1)}s;--max-op:${(Math.random()*0.7+0.2).toFixed(2)};animation-delay:${(Math.random()*4).toFixed(1)}s;`;
+  starsEl.appendChild(s);
+}
+
+// Petals
+const petalEl = document.getElementById('petals');
+const petalChars = ['✦','✧','✶','·','⋆','☽','✿','❀'];
+for (let i = 0; i < 14; i++) {
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.textContent = petalChars[Math.floor(Math.random() * petalChars.length)];
+  p.style.cssText = `left:${Math.random()*100}%;--fs:${(Math.random()*14+8).toFixed(0)}px;--dur:${(Math.random()*10+8).toFixed(1)}s;animation-delay:${(Math.random()*12).toFixed(1)}s;color:rgba(192,${130+Math.floor(Math.random()*70)},250,0.6);`;
+  petalEl.appendChild(p);
+}
+
+// PIN — attach listeners after DOM ready
+const dots = [0,1,2,3].map(i => document.getElementById('d' + i));
+
+function updateDots() {
+  dots.forEach((d, i) => {
+    d.classList.toggle('filled', i < entered.length);
+  });
+}
+
+function flashWrong() {
+  dots.forEach(d => d.classList.add('wrong'));
+  setTimeout(() => {
+    dots.forEach(d => d.classList.remove('wrong', 'filled'));
+    entered = '';
+  }, 600);
+}
+
+function checkPin() {
+  if (entered === PIN) {
+    setTimeout(unlockPage, 300);
+  } else {
+    flashWrong();
+  }
+}
+
+// Attach click to every .num-btn
+document.querySelectorAll('.num-btn').forEach(btn => {
+  const label = btn.textContent.trim();
+  if (btn.id === 'clearBtn') {
+    btn.addEventListener('click', () => {
+      if (entered.length > 0) {
+        entered = entered.slice(0, -1);
+        updateDots();
+      }
+    });
+  } else if (btn.id === 'okBtn') {
+    btn.addEventListener('click', () => {
+      if (entered.length === 4) checkPin();
+    });
+  } else if (/^[0-9]$/.test(label)) {
+    btn.addEventListener('click', () => {
+      if (entered.length >= 4) return;
+      entered += label;
+      updateDots();
+      if (entered.length === 4) setTimeout(checkPin, 150);
+    });
+  }
+});
+
+function unlockPage() {
+  document.getElementById('lockScreen').style.display = 'none';
+  const main = document.getElementById('mainContent');
+  main.style.display = 'flex';
+  burst(window.innerWidth / 2, window.innerHeight / 2, 45);
+}
+
+// Reveal message
+document.getElementById('revealBtn').addEventListener('click', function() {
+  if (revealed) return;
+  revealed = true;
+  document.getElementById('msgText').classList.remove('msg-hidden');
+  document.getElementById('msgText').classList.add('msg-visible');
+  this.style.display = 'none';
+  burst(window.innerWidth / 2, window.innerHeight * 0.4, 28);
+});
+
+// Gem hearts
+document.getElementById('gemBtn').addEventListener('click', function(e) {
+  for (let i = 0; i < 8; i++) {
+    const h = document.createElement('div');
+    h.className = 'float-heart';
+    h.textContent = '💜';
+    const fs = Math.random() * 16 + 12;
+    h.style.cssText = `left:${e.clientX + (Math.random()-0.5)*60}px;top:${e.clientY}px;font-size:${fs}px;animation-delay:${(Math.random()*0.3).toFixed(2)}s;`;
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2000);
+  }
+});
+
+// Balloons
+document.getElementById('balloonRow').addEventListener('click', function(e) {
+  const bal = e.target.closest('.balloon');
+  if (!bal) return;
+  burst(e.clientX, e.clientY, 14);
+  bal.style.transform = 'scale(1.6)';
+  bal.style.opacity = '0';
+  bal.style.transition = 'transform 0.15s, opacity 0.3s';
+  setTimeout(() => bal.remove(), 300);
+});
+
+// Wish button
+const wishes = [
+  'Wishing you a beautiful day! 🌸',
+  'May all your dreams come true 💫',
+  'So much love coming your way 💜',
+  '21 and absolutely glowing ✨',
+  'Here\'s to the best year yet 🥂',
+  'You deserve all the happiness 🎀',
+  'Forever loved, forever cherished 💝',
+  'The best is yet to come 🌟'
+];
+let wishIdx = 0;
+document.getElementById('wishBtn').addEventListener('click', function(e) {
+  document.getElementById('wishText').textContent = wishes[wishIdx % wishes.length];
+  wishIdx++;
+  const star = document.createElement('div');
+  star.className = 'float-heart';
+  star.textContent = '🌟';
+  star.style.cssText = `left:${e.clientX + (Math.random()-0.5)*40}px;top:${e.clientY}px;font-size:22px;`;
+  document.body.appendChild(star);
+  setTimeout(() => star.remove(), 2000);
+});
+
+// Candles
+const candleRow = document.getElementById('candleRow');
+const candleStatus = document.getElementById('candleStatus');
+for (let i = 0; i < totalCandles; i++) {
+  const c = document.createElement('span');
+  c.className = 'candle';
+  c.textContent = '🕯️';
+  c.addEventListener('click', function(ev) {
+    if (this.classList.contains('out')) return;
+    this.classList.add('out');
+    candlesOut++;
+    burst(ev.clientX, ev.clientY, 8);
+    if (candlesOut === totalCandles) {
+      candleStatus.textContent = 'All 21 blown out! Make a wish, ZZ! 🌠';
+      burst(window.innerWidth / 2, window.innerHeight / 2, 50);
+    } else {
+      candleStatus.textContent = `${totalCandles - candlesOut} candle${totalCandles - candlesOut !== 1 ? 's' : ''} left...`;
+    }
+  });
+  candleRow.appendChild(c);
+}
+
+// Global confetti tap
+document.getElementById('mainContent').addEventListener('click', function(e) {
+  const skip = ['revealBtn','wishBtn','gemBtn'];
+  if (e.target.closest('.balloon') || e.target.closest('.candle') || skip.includes(e.target.id)) return;
+  burst(e.clientX, e.clientY, 16);
+});
+
+function burst(cx, cy, count) {
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const w = Math.random() * 8 + 4, h = Math.random() * 5 + 3;
+    p.style.cssText = `left:${cx + (Math.random()-0.5)*80}px;top:${cy + (Math.random()-0.5)*30}px;width:${w}px;height:${h}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${(Math.random()*0.1).toFixed(2)}s;animation-duration:${(Math.random()*0.6+1).toFixed(2)}s;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+  }
+}
+</script>
+</body>
+</html>
