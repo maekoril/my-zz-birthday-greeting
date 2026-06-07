@@ -107,7 +107,7 @@ body{min-height:100vh;background:#1a0a2e;font-family:'Lato',sans-serif;overflow-
 
   <div id="lockScreen">
     <div class="lock-icon">🎀</div>
-    <div class="lock-title">A little something for ZZ&hellip;</div>
+    <div class="lock-title">A little something for zz&hellip;</div>
     <div class="pin-dots" id="pinDots">
       <div class="pin-dot" id="d0"></div>
       <div class="pin-dot" id="d1"></div>
@@ -142,7 +142,7 @@ body{min-height:100vh;background:#1a0a2e;font-family:'Lato',sans-serif;overflow-
   <div id="mainContent">
     <div class="crown">👑</div>
     <div class="subtitle-tag fadein" style="animation-delay:0.1s">Today is all about you</div>
-    <h1 class="name fadein" style="animation-delay:0.2s">Happy Birthday, ZZ</h1>
+    <h1 class="name fadein" style="animation-delay:0.2s">Happy Birthday, zz</h1>
     <p class="birthday-line fadein" style="animation-delay:0.3s">Turning 21 &nbsp;·&nbsp; June 7, 2026</p>
 
     <div class="divider fadein" style="animation-delay:0.4s">
@@ -158,9 +158,9 @@ body{min-height:100vh;background:#1a0a2e;font-family:'Lato',sans-serif;overflow-
     <div class="card fadein" style="animation-delay:0.6s">
       <span class="quote-mark">&ldquo;</span>
       <div class="message-text msg-hidden" id="msgText">
-        <p>Happy, happy birthday, my love! 🎂 Today, the universe gets to celebrate the day it decided to send someone as extraordinary as you into this world — and into my life. Twenty-one years of you, and every single one of them has made this world a little warmer, a little brighter.</p>
+        <p>Happy, happy birthday, my love! 🎂 Today, the universe gets to celebrate the day it decided to send someone as extraordinary as you into this world, and into my life. Twenty-one years of you, and every single one of them has made this world a little warmer, a little brighter.</p>
         <p>Thank you for being everything I never knew I needed. <span class="highlight">Thank you for being the calm in my chaos, the laughter in my quiet days, and the warmth I reach for every single morning.</span> You've always been there — through the loud days and the still ones, through every version of me — and I want you to know that means more than words could ever hold.</p>
-        <p>You are a rare kind of person, ZZ. The kind that makes people feel seen just by being around you. <span class="highlight">You love fiercely, you give generously, and you carry grace in everything you do.</span> The world is genuinely better because you're in it.</p>
+        <p>You are a rare kind of person, my zz. The kind that makes people feel seen just by being around you. <span class="highlight">You love fiercely, you give generously, and you carry grace in everything you do.</span> The world is genuinely better because you're in it.</p>
         <p>On your 21st birthday, I hope you feel as loved as you've made me feel. I hope today is filled with all the things that make your heart full — and I hope you know that wherever the journey takes us, <span class="highlight">I am right here, always in your corner, always cheering you on.</span></p>
         <p>Today is yours. Enjoy every second of it — you deserve it completely. I love you so, so much. More than you know. More than I say. Always. 💜</p>
       </div>
@@ -180,7 +180,7 @@ body{min-height:100vh;background:#1a0a2e;font-family:'Lato',sans-serif;overflow-
     </div>
 
     <div class="wish-area fadein" style="animation-delay:0.9s">
-      <button class="wish-btn" id="wishBtn">Send ZZ a wish 🌠</button>
+      <button class="wish-btn" id="wishBtn">Tap for a wish 🌠</button>
       <div class="wish-text" id="wishText"></div>
     </div>
 
@@ -350,7 +350,7 @@ for (let i = 0; i < totalCandles; i++) {
     candlesOut++;
     burst(ev.clientX, ev.clientY, 8);
     if (candlesOut === totalCandles) {
-      candleStatus.textContent = 'All 21 blown out! Make a wish, ZZ! 🌠';
+      candleStatus.textContent = 'All 21 blown out! Make a wish, zz! 🌠';
       burst(window.innerWidth / 2, window.innerHeight / 2, 50);
     } else {
       candleStatus.textContent = `${totalCandles - candlesOut} candle${totalCandles - candlesOut !== 1 ? 's' : ''} left...`;
